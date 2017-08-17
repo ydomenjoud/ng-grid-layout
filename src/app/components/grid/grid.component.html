@@ -1,0 +1,33 @@
+<section [style.height.px]="containerHeight" #gridView>
+
+  <!-- grid cells -->
+  <article #cell
+           *ngFor="let position of gridPositions"
+           [style.height]="rowHeight+'px'"
+           [style.flexBasis]="100/cols+'%'"
+           [ngClass]="grid.cellType(position)"
+           (drop)="onDrop(position, cell, $event)"
+           (click)="onClick(position, cell, $event)"
+           (dragover)="onDragHover(position, cell, $event)"
+  >
+
+  </article>
+
+  <!-- items list -->
+  <div
+    appGridDraggable
+    *ngFor="let item of grid.items"
+    [rows]="item.size.rows"
+    [cols]="item.size.cols"
+    [grid]="grid"
+    [item]="item"
+    [style.width]="100*item.size.cols/grid.config.cols+'%'"
+    [style.height]="item.size.rows * rowHeight+'px'"
+    [style.top]="item.position.row * rowHeight+'px'"
+    [style.left]="item.position.col * gridWidth/grid.config.cols +'px'"
+  >
+    widget {{ grid.config.cols}} {{gridWidth}}
+  </div>
+
+</section>
+

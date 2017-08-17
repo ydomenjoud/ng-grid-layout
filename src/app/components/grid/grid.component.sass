@@ -1,0 +1,30 @@
+section
+  display: flex
+  flex-wrap: wrap
+  box-sizing: border-box
+  border: 1px solid green
+  position: relative
+  background-color: #ededed
+  
+  article
+    flex: 0 1 auto
+    box-sizing: border-box
+    border: 1px solid rgba(#FFF, 0.3)
+    background-color: rgba(#CCC, 0.3)
+    box-sizing: border-box
+    transition: background 200ms
+    //z-index: 100
+    &.occupated
+      //background-color: #8cb0ff
+    &.hovered
+      background-color: #fffdd1
+      
+  > div
+    //z-index: 20
+    position: absolute
+    background-color: #c4b9b5
+    box-sizing: border-box
+    border: 1px solid #0f4e80
+  //Empty,
+  //Occupated,
+  //Hovered
