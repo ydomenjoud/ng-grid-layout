@@ -37,6 +37,8 @@ export class GridDraggableDirective {
     // }
     // console.log('stop drag');
 
+    this.grid.unHoverGrid();
+
     // hack
     setTimeout(() => {
       this.renderer.setStyle(this.el.nativeElement, 'visibility', 'visible');

@@ -26,7 +26,7 @@
     [style.top]="item.position.row * rowHeight+'px'"
     [style.left]="item.position.col * gridWidth/grid.config.cols +'px'"
   >
-    widget {{ grid.config.cols}} {{gridWidth}}
+    [{{ item.position.row + '-' + item.position.col}}] - {{ item.size.rows + 'x' + item.size.cols }}
   </div>
 
 </section>

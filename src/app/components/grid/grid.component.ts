@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostListener, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {Grid} from '../../classes/grid';
 import {GridPosition} from '../../classes/grid-position';
 
@@ -18,6 +18,11 @@ export class GridComponent implements OnInit, OnChanges {
   grid: Grid;
   gridPositions: GridPosition[] = [];
   gridWidth: number;
+
+  @HostListener('window:resize', ['$event.target'])
+  onResize() {
+    this.calculComponentWidth();
+  }
 
   constructor(private elementRef: ElementRef) {
   }
@@ -89,10 +94,13 @@ export class GridComponent implements OnInit, OnChanges {
     this.grid.removeItem({position, size: this.grid.movingItem.size});
   }
 
+  calculComponentWidth() {
+    this.gridWidth = this.gridView.nativeElement.getBoundingClientRect().width;
+  }
+
   ngOnInit() {
     this.initGrid();
-    this.gridWidth = this.gridView.nativeElement.getBoundingClientRect().width;
-    // console.log(this.gridWidth)
+    this.calculComponentWidth();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
