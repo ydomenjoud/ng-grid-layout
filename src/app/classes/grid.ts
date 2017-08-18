@@ -8,7 +8,7 @@ export class Grid {
 
   static error_overlap = 'cannot add grid item: overlap';
 
-  movingItem: GridSize;
+  movingItem: GridItem;
 
   private gridConfig: GridConfig;
   private gridItems: GridItem[];
@@ -98,14 +98,13 @@ export class Grid {
   /**
    * add row to the grid
    */
-  addRow() {
-    console.log(this.config)
-    this.config.rows = this.config.rows+1;
-    console.log(this.config)
-    const copy = [...this.gridItems].map(item => ({...item}))
-    this.initConfig(this.config);
+  addRows(count = 1) {
 
-    this.gridItems = copy;
+    this.config.rows += count;
+    for (let i = 0; i < count; i++) {
+      this.gridCellsOccupation.push(Array(this.config.cols).fill(false));
+      this.gridCellsHovered.push(Array(this.config.cols).fill(false));
+    }
   }
 
   /**
@@ -114,11 +113,38 @@ export class Grid {
    */
   addItem(item: GridItem) {
     this.unHoverGrid();
+
     if (!this.isItemSpotAvailable(item)) {
       throw new Error(Grid.error_overlap);
     }
+
+    // // if movingItem has a previous position
+    if (this.movingItem.position) {
+      // console.log('has position ', this.movingItem.position);
+      // console.log('position ', this.gridItems, this.movingItem);
+
+      this.moveItem(this.movingItem, item.position);
+
+    }  else {
+      this.gridItems.push(item);
+    }
+
+
+    // console.table(this.gridItems);
+
     this.reserveItemSpot(item);
-    this.gridItems.push(item);
+
+    // console.table(this.cellsOccupated);
+
+    // reset occupation
+    this.emptyGrid();
+    this.gridItems.forEach(gridItem => {
+      this.reserveItemSpot(gridItem);
+    });
+    // console.table(this.cellsOccupated);
+
+    // clean moving item
+    this.movingItem = null;
   }
 
   /**
@@ -126,8 +152,20 @@ export class Grid {
    * @param {GridItem} item
    */
   removeItem(item: GridItem) {
-    this.gridItems.splice(this.gridItems.indexOf(item), 1);
+
+    const index = this.gridItems.findIndex(elt => {
+      return elt.position.row === this.movingItem.position.row
+        && elt.position.col === this.movingItem.position.col
+        && elt.size.cols === this.movingItem.size.cols
+        && elt.size.rows === this.movingItem.size.rows
+    });
+
+    this.gridItems.splice(index, 1);
     this.emptyPositions(this.getPositionsListForItemSpot(item));
+  }
+
+  moveItem(item: GridItem, newPosition: GridPosition) {
+    item.position = newPosition;
   }
 
   /**
@@ -216,10 +254,20 @@ export class Grid {
   }
 
   /**
-   * Empty all grid
+   * Unhover all grid
    */
   unHoverGrid() {
     this.unHoverPositions(this.getPositionsListForItemSpot({
+      position: {row: 0, col: 0},
+      size: {cols: this.config.cols, rows: this.config.rows}
+    }));
+  }
+
+  /**
+   * Empty all grid
+   */
+  emptyGrid() {
+    this.emptyPositions(this.getPositionsListForItemSpot({
       position: {row: 0, col: 0},
       size: {cols: this.config.cols, rows: this.config.rows}
     }));
@@ -248,9 +296,27 @@ export class Grid {
    * @return {boolean}
    */
   isItemSpotAvailable(item: GridItem) {
-    return this.getPositionsListForItemSpot(item).every((position: GridPosition) => {
+
+    // check if this is a moving item
+    console.log(' movingItem ', this.movingItem);
+
+    // if this is a moving item
+    if (this.movingItem && this.movingItem.position) {
+      // should free positions
+      this.emptyPositions(this.getPositionsListForItemSpot(this.movingItem));
+    }
+
+    const isAvailable = this.getPositionsListForItemSpot(item).every((position: GridPosition) => {
       return this.isInGrid(position) && this.isPositionAvailable(position);
     });
+
+    // reset occupation
+    this.emptyGrid();
+    this.gridItems.forEach(gridItem => {
+      this.reserveItemSpot(gridItem);
+    });
+
+    return isAvailable;
   }
 
   /**
@@ -284,5 +350,12 @@ export class Grid {
     this.hoverPositions(this.getPositionsListForItemSpot(item));
   }
 
+
+  /**
+   * do last line contain no element ?
+   */
+  isLastLineEmpy() {
+    return !this.cellsOccupated[this.config.rows - 1].some(elt => elt === true);
+  }
 }
 

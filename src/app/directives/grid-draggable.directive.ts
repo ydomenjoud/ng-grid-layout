@@ -16,21 +16,31 @@ export class GridDraggableDirective {
 
   @HostListener('dragstart', ['$event'])
   onDragStart(event) {
-    this.grid.movingItem = {cols: this.cols, rows: this.rows}
+    this.grid.movingItem = this.item || {size: {cols: this.cols, rows: this.rows}};
     // event.dataTransfer.effectAllowed = 'move';
     this.renderer.addClass(this.el.nativeElement, 'moving');
-    console.log('start drag');
+    // console.log('start drag');
+
+    // hack
+    setTimeout(() => {
+      this.renderer.setStyle(this.el.nativeElement, 'visibility', 'hidden');
+    }, 1);
   }
 
   @HostListener('dragend', ['$event'])
   onDragEnd(event) {
     this.renderer.removeClass(this.el.nativeElement, 'moving');
     // if this is an item, we should remove it
-    console.log(this.item);
-    if (this.item) {
-      this.grid.removeItem(this.item);
-    }
-    console.log('stop drag');
+    // console.log(this.item);
+    // if (this.item) {
+    //   this.grid.removeItem(this.item);
+    // }
+    // console.log('stop drag');
+
+    // hack
+    setTimeout(() => {
+      this.renderer.setStyle(this.el.nativeElement, 'visibility', 'visible');
+    }, 1);
   }
 
   constructor(private el: ElementRef,

@@ -1,5 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import * as _ from 'lodash';
+import {GridComponent} from './components/grid/grid.component';
 
 @Component({
   selector: 'app-root',
@@ -11,13 +12,9 @@ export class AppComponent {
   rows = 3;
   rowHeight = 40;
 
-  @ViewChild('grid') grid;
+  @ViewChild('grid') grid: GridComponent;
 
   addRow() {
-
-    const backup = _.cloneDeep(this.grid.grid.gridItems)
-    console.log(backup);
-    this.rows++;
-    this.grid.grid.gridItems = backup;
+    this.grid.addRows();
   }
 }

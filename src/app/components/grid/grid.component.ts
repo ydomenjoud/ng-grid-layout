@@ -22,6 +22,25 @@ export class GridComponent implements OnInit, OnChanges {
   constructor(private elementRef: ElementRef) {
   }
 
+
+  /**
+   * add rows to the grid
+   * @param {number} count
+   */
+  addRows(count = 1) {
+    this.grid.addRows(count);
+
+    this.rows += count;
+
+    // set containerHeight
+    this.containerHeight = this.rows * this.rowHeight;
+
+    this.gridPositions = this.grid.getPositionsListForItemSpot({
+      position: {row: 0, col: 0},
+      size: {cols: this.cols, rows: this.rows}
+    });
+  }
+
   initGrid() {
     // build grid
     this.grid = new Grid({
@@ -42,7 +61,7 @@ export class GridComponent implements OnInit, OnChanges {
 
   onDragHover(position: GridPosition, item, $event) {
     // console.log('over', position);
-    this.grid.hoverItemSpot({position, size: this.grid.movingItem});
+    this.grid.hoverItemSpot({position, size: this.grid.movingItem.size});
     return false;
     // this.grid.isItemSpotAvailable()
   }
@@ -59,18 +78,21 @@ export class GridComponent implements OnInit, OnChanges {
   // }
 
   onDrop(position: GridPosition, item, $event) {
-    console.log('drop', position);
-    this.grid.addItem({position, size: this.grid.movingItem});
+    // console.log('drop', position);
+    this.grid.addItem({position, size: this.grid.movingItem.size});
+    if (!this.grid.isLastLineEmpy()) {
+      this.addRows(3);
+    }
   }
 
   onClick(position: GridPosition, item, $event) {
-    this.grid.removeItem({position, size: this.grid.movingItem});
+    this.grid.removeItem({position, size: this.grid.movingItem.size});
   }
 
   ngOnInit() {
     this.initGrid();
     this.gridWidth = this.gridView.nativeElement.getBoundingClientRect().width;
-    console.log(this.gridWidth)
+    // console.log(this.gridWidth)
   }
 
   ngOnChanges(changes: SimpleChanges): void {

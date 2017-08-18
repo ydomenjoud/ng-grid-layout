@@ -7,9 +7,9 @@
            [style.flexBasis]="100/cols+'%'"
            [ngClass]="grid.cellType(position)"
            (drop)="onDrop(position, cell, $event)"
-           (click)="onClick(position, cell, $event)"
            (dragover)="onDragHover(position, cell, $event)"
   >
+    <!--(click)="onClick(position, cell, $event)"-->
 
   </article>
 
